@@ -1,6 +1,5 @@
 import os, shutil
 from block_markdown import markdown_to_html_node, markdown_to_blocks, get_header_tag
-BASEPATH = "src/main.py"
 
 def extract_title(markdown):
     blocks = markdown_to_blocks(markdown)
@@ -11,7 +10,7 @@ def extract_title(markdown):
         else:
             raise Exception("h1 level header is not found")
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     # Don't modify the input parameters or iterate through directories
     # This function should handle a single file
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
@@ -34,8 +33,8 @@ def generate_page(from_path, template_path, dest_path):
     # Replace placeholders in template
     new_template_html = template_html.replace("{{ Title }}", title)
     new_template_html = new_template_html.replace("{{ Content }}", content_html)
-    new_template_html = new_template_html.replace('href="/', f'href="{BASEPATH}')
-    new_template_html = new_template_html.replace('src="/', f'src="{BASEPATH}')
+    new_template_html = new_template_html.replace('href="/', f'href="{basepath}')
+    new_template_html = new_template_html.replace('src="/', f'src="{basepath}')
 
     # Ensure the directory exists before writing the file
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
@@ -44,7 +43,7 @@ def generate_page(from_path, template_path, dest_path):
     with open(dest_path, "w") as dest_file:
         dest_file.write(new_template_html)
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
     # Create destination directory if it doesn't exist
     os.makedirs(dest_dir_path, exist_ok=True)
 
@@ -57,14 +56,14 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
 
         if os.path.isdir(from_path):
             # Recursively process subdirectories
-            generate_pages_recursive(from_path, template_path, dest_path)
+            generate_pages_recursive(from_path, template_path, dest_path, basepath)
             
         elif content.endswith(".md"):  
             # Convert .md files to .html using the template
             html_dest_path = dest_path.replace(".md", ".html")
             
             # Use generate_page function to handle the conversion
-            generate_page(from_path, template_path, html_dest_path)
+            generate_page(from_path, template_path, html_dest_path, basepath)
             print(f" * {from_path} -> {html_dest_path}")       
         else:
             # Copy other files directly

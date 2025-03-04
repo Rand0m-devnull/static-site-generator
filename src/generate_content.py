@@ -33,8 +33,8 @@ def generate_page(from_path, template_path, dest_path, basepath):
     # Replace placeholders in template
     new_template_html = template_html.replace("{{ Title }}", title)
     new_template_html = new_template_html.replace("{{ Content }}", content_html)
-    new_template_html = new_template_html.replace('href="/', f'href="{basepath}')
-    new_template_html = new_template_html.replace('src="/', f'src="{basepath}')
+    new_template_html = new_template_html.replace('href="/', 'href="' + basepath)
+    new_template_html = new_template_html.replace('src="/', f'src="' + basepath)
 
     # Ensure the directory exists before writing the file
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
